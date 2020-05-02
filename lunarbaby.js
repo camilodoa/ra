@@ -5,7 +5,6 @@ lunary baby in the browser
 
 dependencies:
 paper.js
-p5.js
 */
 
 paper.install(window);
@@ -20,8 +19,14 @@ window.onload = function() {
 
   // Lunar Baby
 
+  // "global" variables
   var n = 1;
   var bodycolor = '#FDD8B5';
+  var blinking = false;
+  var blinkcounter = 0;
+  var movementcounter = 0;
+  var covetedlocation = view.center;
+  var maxspeed = 2;
 
   // head
   var head = new Path.Oval([0, 0], [40, 53]);
@@ -62,6 +67,11 @@ window.onload = function() {
   eye.strokeWidth = 0.5;
   var eyesymbol= new Symbol(eye);
 
+  var eyelid = new Path.Oval([0, 0], [20, 11]);
+  eyelid.fillColor = null;
+  eyelid.strokeColor = null;
+  var eyelidsymbol= new Symbol(eyelid);
+
   var iris = new Path.Oval([0, 0], [9, 9]);
   iris.fillColor = '#77B5FE';
   iris.strokeColor = null;
@@ -76,8 +86,6 @@ window.onload = function() {
   shine.fillColor = 'white';
   shine.strokeColor = null;
   var shinesymbol= new Symbol(shine);
-
-  // arms
 
   var LunaryBaby = Base.extend({
     initialize: function(position) {
@@ -96,7 +104,7 @@ window.onload = function() {
       this.iris = irissymbol.place();
       this.pupil = pupilsymbol.place();
       this.shine = shinesymbol.place();
-
+      this.eyelid = eyelidsymbol.place();
 
       this.shortPath = new Path();
       this.shortPath.strokeWidth = 4;
@@ -104,27 +112,30 @@ window.onload = function() {
       this.count = 0;
     },
 
-    run: function() {
-      // var segments = this.path.segments,
-        dx = this.vel.x,
-        dy = this.vel.y,
-        x = this.loc.x += dx,
-        y = this.loc.y += dy,
-        speed = this.vel.length,
-        count = speed * 10,
-        k1 = -5 - speed / 3;
+    blink: function(){
+      // If the lunar baby is blinking, stop it from blinking
+      if (blinking && blinkcounter > 25) {
+        this.eyelid.symbol.item.fillColor = null;
+        blinking = false;
+        blinkcounter = 0; // reset blink counter
+      }
+      // If the baby is not blinking, it has a chance to blink
+      else if (! blinking && Math.random() < 0.001){
+        this.eyelid.symbol.item.fillColor = bodycolor;
+        blinking = true;
+        blinkcounter = 0;
+      }
+      else if (blinking){
+        blinkcounter += 1;
+      }
+    },
 
-        // Bounce off the walls.
-        if (x < 0 || x > view.size.width) this.vel.x *= -1;
-        if (y < 0 || y > view.size.height) this.vel.y *= -1;
-
-      // TODO: Fix this bug
-      delete this.vel._angle;
-
+    renderchanges: function () {
       this.head.matrix = new Matrix().translate(this.loc);
       this.eye.matrix = new Matrix().translate(this.loc);
       this.iris.matrix = new Matrix().translate(this.loc);
       this.pupil.matrix = new Matrix().translate(this.loc);
+      this.eyelid.matrix = new Matrix().translate(this.loc);
 
       // arm movements
       var rightarmloc = Object.assign({}, this.loc);
@@ -151,6 +162,86 @@ window.onload = function() {
       shineloc.x += 1;
       shineloc.y -= 1;
       this.shine.matrix = new Matrix().translate(shineloc);
+    },
+
+    redirect: function (degrees) {
+      var direction = this.vel.clone();
+      var target = new Point(Math.cos(degrees) * 2, Math.sin(degrees) * 2);
+      target.add(direction);
+      this.vel = target;
+    },
+
+    randomaction: function () {
+
+      var actions = [
+        'goright',
+        'goleft',
+        'goup',
+        'godown'
+      ];
+
+      // change velocity based on action taken
+      eval('this.' + actions[Math.floor(Math.random() * actions.length)] + '()');
+    },
+
+    godown: function () {
+      this.redirect(270);
+    },
+
+    goup: function () {
+      this.redirect(90);
+    },
+
+    goleft: function () {
+      this.redirect(0);
+    },
+
+    goright: function () {
+      this.redirect(180);
+    },
+
+    move: function () {
+      x = this.loc.x += this.vel.x;
+      y = this.loc.y += this.vel.y;
+      speed = this.vel.length;
+      count = speed * 10;
+      // Bounce off the walls.
+      if (x < 0 || x > view.size.width) this.vel.x *= -1;
+      if (y < 0 || y > view.size.height) this.vel.y *= -1;
+      delete this.vel._angle;
+    },
+
+    float: function () {
+      // Floats around at a constant velocity
+      dx = this.vel.x,
+      dy = this.vel.y,
+      x = this.loc.x += dx,
+      y = this.loc.y += dy,
+      speed = this.vel.length,
+      count = speed * 10,
+      k1 = -5 - speed / 3;
+
+      // Bounce off the walls.
+      if (x < 0 || x > view.size.width) this.vel.x *= -1;
+      if (y < 0 || y > view.size.height) this.vel.y *= -1;
+
+      // TODO: Fix this bug
+      delete this.vel._angle;
+    },
+
+    run: function () {
+      // If baby is moving and it's time to select a new action
+      if (movementcounter > 100) {
+        movementcounter = 0;
+        this.randomaction();
+        console.log("changed action");
+      }else {
+        this.float();
+        movementcounter += 1;
+      }
+
+      this.blink();
+      this.renderchanges();
     }
   });
 
@@ -161,10 +252,15 @@ window.onload = function() {
     lunarbabies.push(new LunaryBaby(Point.random().multiply(view.size)));
   }
 
-  view.onFrame = function(event) {
+  view.onFrame = function (event) {
     // Draw lunar babies
     for (var i = 0, l = lunarbabies.length; i < l; i++) {
       lunarbabies[i].run();
     }
+  }
+
+  view.onMouseMove = function(event){
+    covetedlocation = event.point;
+    return false; // prevent touch scrolling
   }
 }

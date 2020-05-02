@@ -1,5 +1,5 @@
-# Ra the Lunar baby
+# Ra the Lunar Baby
 
-Red spots hurt it. Green spots feed it. It is fully in control of its movements.
+Ra, the lunar baby. Only existing in your browser.
 
 Made with paper.js. Inspired by [otoro.net](otoro.net).

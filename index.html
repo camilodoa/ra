@@ -7,15 +7,23 @@
 	  <style>
 	    html, body {
 	    overflow: hidden;
+			height: 100%;
 	    }
 			body {
-				background: #92C4EE;
+				background-image: radial-gradient(#ffeac3, #ece9e9);
+			}
+			canvas {
+				display: block;
+			  margin-left: auto;
+			  margin-right: auto;
+				height: 100%;
+				width: 100%;
 			}
 	  </style>
 		<script type="text/javascript" src="paper.js"></script>
 		<script type="text/javascript" canvas="canvas" src="lunarbaby.js"></script>
 	</head>
 	<body>
-		<canvas id="canvas" width="600" height="400" resize></canvas>
+		<canvas id="canvas" resize></canvas>
 	</body>
 </html>

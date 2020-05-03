@@ -21,6 +21,9 @@ window.onload = function() {
   let covetedLocation = new Point(view.center.x, view.center.y);
   // max world's inertia
   const inertia = 0.6;
+  // world's sounds
+  var sound = document.getElementById("sound");
+  sound.volume = 0.2; // half volume
   /*
   symbols
    */
@@ -111,7 +114,7 @@ window.onload = function() {
       // initial position and velocity
       this.vel = Point.random();
       this.loc = position;
-      this.ability = 50;
+      this.ability = 100;
       // action time length
       this.actionCount = this.ability + gaussianSample() * 2;
       // speed limit
@@ -435,7 +438,10 @@ window.onload = function() {
     viewer interacting with the world
      */
     covetedLocation = event.point;
-    ideal.update(covetedLocation)
+    ideal.update(covetedLocation);
+    // play sound when user clicks
+    if (sound.paused) sound.play();
+    else if (sound.ended) sound.play();
     return false; // prevent touch scrolling
   }
 }

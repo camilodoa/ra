@@ -148,7 +148,7 @@ window.onload = function() {
       this.epsilon = 0.2;
       this.discount = 0.8;
       this.alpha = 0.3;
-      this.weights = {};
+      this.weights = {'euclidean' : 0};
     },
     /*
      q-learning
@@ -183,7 +183,7 @@ window.onload = function() {
       let value = 0;
       for (let i = 0; i < this.actions.length; i++) {
         const possibleValue = this.getQValue(position, velocity, this.actions[i]);
-        if (possibleValue >= value) value = possibleValue;
+        if (possibleValue > value) value = possibleValue;
       }
       return value;
     },
@@ -191,11 +191,13 @@ window.onload = function() {
       /*
       finds the best action to take based on current q-values
        */
-      const value = 0;
-      let selected = this.actions[0];
-      for (let i = 1; i < this.actions.length; i++) {
-        if (this.getQValue(position, velocity, this.actions[i]) >= value) {
+      let value = -9999999999;
+      let selected;
+      for (let i = 0; i < this.actions.length; i++) {
+        const actionValue = this.getQValue(position, velocity, this.actions[i]);
+        if ( actionValue > value) {
           selected = this.actions[i];
+          value = actionValue;
         }
       }
       return selected;

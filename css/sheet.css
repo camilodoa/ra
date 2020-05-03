@@ -1,0 +1,14 @@
+html, body {
+    overflow: hidden;
+    height: 100%;
+}
+body {
+    background-image: radial-gradient(#ece9e9, #ffeac3);
+}
+canvas {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+    width: 100%;
+}

@@ -8,6 +8,9 @@ paper.js
 */
 paper.install(window);
 window.onload = function() {
+  /*
+  universe
+   */
   // take space
   paper.setup('space');
   // number of babies
@@ -16,11 +19,11 @@ window.onload = function() {
   const bodyColor = '#fdd8b5';
   // secret
   let covetedLocation = new Point(view.center.x, view.center.y);
-  // max baby speed
-  const maxSpeed = 0.7;
-  // todo: make inertia a random number in a range and maxspeed baby-dependent
   // max world's inertia
-  const inertia = 0.4;
+  const inertia = 0.6;
+  /*
+  symbols
+   */
   // head
   const head = new Path.Oval([0, 0], [40, 53]);
   head.fillColor = bodyColor;
@@ -97,7 +100,7 @@ window.onload = function() {
       this.heaven.matrix = new Matrix().translate(position);
     }
   });
-  var LunarBaby = Base.extend({
+  const LunarBaby = Base.extend({
     /*
     Lunar Baby.
      */
@@ -108,7 +111,11 @@ window.onload = function() {
       // initial position and velocity
       this.vel = Point.random();
       this.loc = position;
-      this.actionCount = 50;
+      this.ability = 50;
+      // action time length
+      this.actionCount = this.ability + gaussianSample() * 2;
+      // speed limit
+      this.maxSpeed = 0.7;
       // body
       this.rightarm = rightArmSym.place();
       this.leftarm = leftArmSym.place();
@@ -158,7 +165,7 @@ window.onload = function() {
        */
       let value = 0;
       const features = this.getFeatures(position, velocity, action);
-      for (const feature in features){
+      for (const feature in features) {
         // safety for new weights
         if (isNaN(this.weights[feature])) this.weights[feature] = 0.0;
         // dot product of weights and features
@@ -171,7 +178,7 @@ window.onload = function() {
       return q-value of the best action to take from current position
        */
       let value = 0;
-      for (let i = 0; i < this.actions.length; i++){
+      for (let i = 0; i < this.actions.length; i++) {
         const possibleValue = this.getQValue(position, velocity, this.actions[i]);
         if (possibleValue >= value) value = possibleValue;
       }
@@ -183,14 +190,14 @@ window.onload = function() {
        */
       const value = 0;
       let selected = this.actions[0];
-      for (let i = 1; i < this.actions.length; i++){
-        if (this.getQValue(position, velocity, this.actions[i]) >= value){
+      for (let i = 1; i < this.actions.length; i++) {
+        if (this.getQValue(position, velocity, this.actions[i]) >= value) {
           selected = this.actions[i];
         }
       }
       return selected;
     },
-    update: function (position, velocity, action, reward){
+    update: function (position, velocity, action, reward) {
       /*
       updates weights with the transition that was experienced
        */
@@ -202,18 +209,18 @@ window.onload = function() {
       // calculate difference between expected  and actual transition
       const difference = reward + this.discount * this.computeValueFromQValues(successorPosition, successorVelocity) - this.getQValue(position, velocity, action);
       // perform the update step
-      for (const feature in features)  this.weights[feature] = this.weights[feature] + this.alpha * difference * features[feature];
+      for (const feature in features) this.weights[feature] = this.weights[feature] + this.alpha * difference * features[feature];
     },
     getReward: function (position, velocity, action) {
       /*
       how far you are to your goal is your pain
        */
-      return - covetedLocation.clone().subtract(this.calculateSuccessor(position, velocity, action)).length;
+      return -covetedLocation.clone().subtract(this.calculateSuccessor(position, velocity, action)).length;
     },
     /*
     behavioral animations
      */
-    blink: function() {
+    blink: function () {
       /*
       blink sometimes
        */
@@ -224,14 +231,18 @@ window.onload = function() {
         this.blinkCounter = 0; // reset blink counter
       }
       // If the baby is not blinking, it has a chance to blink
-      else if (! this.blinking && Math.random() < 0.001){
+      else if (!this.blinking && Math.random() < 0.001) {
         this.eyelid.symbol.item.fillColor = bodyColor;
         this.blinking = true;
         this.blinkCounter = 0;
-      }
-      else if (this.blinking){
+      } else if (this.blinking) {
         this.blinkCounter += 1;
       }
+    },
+    wave: function () {
+      /*
+      todo this wave animation that also depends on movement
+       */
     },
     /*
     symbol position
@@ -282,7 +293,7 @@ window.onload = function() {
       sometimes takes a random action
        */
       let action;
-      if (Math.random() < this.epsilon){
+      if (Math.random() < this.epsilon) {
         action = this.randomAction();
       } else {
         action = this.computeActionFromQValues(position, velocity);
@@ -321,10 +332,10 @@ window.onload = function() {
      */
     calculateSuccessor: function (position, velocity, action) {
       const outComeVector = action(position, velocity);
-      outComeVector.length = maxSpeed;
+      outComeVector.length = this.maxSpeed;
       const finalPosition = position.clone();
       // add velocity vector to position to get the final position
-      for (let i = 0; i < this.actionCount; i ++ ) {
+      for (let i = 0; i < this.actionCount; i++) {
         finalPosition.x += outComeVector.x;
         finalPosition.y += outComeVector.y;
       }
@@ -332,11 +343,10 @@ window.onload = function() {
     },
     float: function () {
       /*
-      float at constant velocity
-      todo: add acceleration
+      float at a velocity that changes based on where the baby is in its action
        */
-      let dx = this.vel.x,
-          dy = this.vel.y,
+      let dx = (toGaussian(this.movementCounter / this.actionCount) + 0.3) * this.vel.x,
+          dy =  (toGaussian(this.movementCounter / this.actionCount) + 0.3) * this.vel.y,
           x = this.loc.x += dx,
           y = this.loc.y += dy;
       // bounce off the walls.
@@ -345,9 +355,9 @@ window.onload = function() {
       // this is a bug
       delete this.vel._angle;
     },
-    run: function () {
+    step: function () {
       /*
-      act
+      experience the world in a time step
        */
       if (this.movementCounter >= this.actionCount) {
         // when the previous action expires perform a new one
@@ -355,10 +365,11 @@ window.onload = function() {
         // think
         this.vel = this.chooseAction(this.loc.clone(), this.vel.clone())(this.loc, this.vel);
         // readjust expectations
-        this.vel.length = maxSpeed;
+        this.vel.length = this.maxSpeed;
         // todo: put move arms here
-        // todo: make actioncount different for the next step
-      }else {
+        // update action length here
+        this.actionCount = this.ability + gaussianSample() * 2;
+      } else {
         // otherwise continue moving
         this.float();
         this.movementCounter += 1;
@@ -367,7 +378,6 @@ window.onload = function() {
       this.renderChanges();
     }
   });
-
   /*
   Utility functions
    */
@@ -383,7 +393,21 @@ window.onload = function() {
      */
     return (angle * Math.PI / 180 );
   }
-
+  let gaussianSample = () => {
+    /*
+    returns random number sampled from a gaussian from ~ -3 to 3
+     */
+    let u = 0, v = 0;
+    while(u === 0) u = Math.random();
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+  }
+  let toGaussian = (x, height = 1, mew = 0, sigma = 2.23) => {
+    /*
+    maps input from 0-1 to 0-1 on a bell curve
+     */
+    return  (Math.sin(2 * Math.PI * (x - (1/4))) + 1) / 2;
+  }
   /*
   exist / main
    */
@@ -395,15 +419,21 @@ window.onload = function() {
   // make coveted goal
   const ideal = new CovetedLocation();
   ideal.update(covetedLocation);
-
-  // register effects
+  /*
+  register effects
+   */
   view.onFrame = function (event) {
-    // Draw lunar babies
+    /*
+    every frame we update the world
+     */
     for (var i = 0, l = lunarBabies.length; i < l; i++) {
-      lunarBabies[i].run();
+      lunarBabies[i].step();
     }
   }
   view.onClick = function(event){
+    /*
+    viewer interacting with the world
+     */
     covetedLocation = event.point;
     ideal.update(covetedLocation)
     return false; // prevent touch scrolling

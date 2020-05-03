@@ -20,10 +20,12 @@ window.onload = function() {
   // secret
   let covetedLocation = new Point(view.center.x, view.center.y);
   // max world's inertia
-  const inertia = 0.6;
+  const inertia = 1.5;
   // world's sounds
   var sound = document.getElementById("sound");
   sound.volume = 0.2; // half volume
+  // heaven
+  var heavenSize = 20;
   /*
   symbols
    */
@@ -81,11 +83,22 @@ window.onload = function() {
   shine.strokeColor = null;
   const shineSym = new Symbol(shine);
   // heaven
-  const heaven = new Path.Oval(covetedLocation, [20, 20]);
+  const heaven = new Path.Oval(covetedLocation, [heavenSize, heavenSize]);
   heaven.fillColor = '#ffeac3';
   heaven.strokeColor = null;
-  heaven.strokeWidth = 0.5;
   const heavenSym = new Symbol(heaven);
+
+  const innergate = new Path.Oval(covetedLocation, [2 * heavenSize, 2 * heavenSize]);
+  innergate.fillColor = null;
+  innergate.strokeColor = '#f9ead0';
+  innergate.strokeWidth = 2;
+  const innergateSym = new Symbol(innergate);
+
+  const outergate = new Path.Oval(covetedLocation, [4 * heavenSize, 4 * heavenSize]);
+  outergate.fillColor = null;
+  outergate.strokeColor = '#f2e9dc';
+  outergate.strokeWidth = 1;
+  const outergateSym = new Symbol(outergate);
   /*
   Objects
    */
@@ -98,9 +111,13 @@ window.onload = function() {
       initialize class
        */
       this.heaven = heavenSym.place();
+      this.innergate = innergateSym.place();
+      this.outergate = outergateSym.place();
     },
     update: function (position) {
       this.heaven.matrix = new Matrix().translate(position);
+      this.innergate.matrix = new Matrix().translate(position);
+      this.outergate.matrix = new Matrix().translate(position)
     }
   });
   const LunarBaby = Base.extend({
@@ -114,11 +131,11 @@ window.onload = function() {
       // initial position and velocity
       this.vel = Point.random();
       this.loc = position;
-      this.ability = 100;
+      this.ability = 150;
       // action time length
       this.actionCount = this.ability + gaussianSample() * 2;
       // speed limit
-      this.maxSpeed = 0.7;
+      this.maxSpeed = 0.5;
       // body
       this.rightarm = rightArmSym.place();
       this.leftarm = leftArmSym.place();
@@ -145,10 +162,10 @@ window.onload = function() {
         this.goLeft
       ];
       // q-learning
-      this.epsilon = 0.2;
+      this.epsilon = 0.3;
       this.discount = 0.8;
       this.alpha = 0.3;
-      this.weights = {'euclidean' : 0};
+      this.weights = {};
     },
     /*
      q-learning
@@ -357,6 +374,11 @@ window.onload = function() {
       // bounce off the walls.
       if (x < 0 || x > view.size.width) this.vel.x *= -1;
       if (y < 0 || y > view.size.height) this.vel.y *= -1;
+      // expelled from the gates
+      if (Math.pow(x - covetedLocation.x, 2) + Math.pow(y - covetedLocation.y, 2) < Math.pow(2.2 * heavenSize, 2)){
+        this.vel.x *= -2 * Math.random();
+        this.vel.y *= -2 * Math.random();
+      }
       // this is a bug
       delete this.vel._angle;
     },

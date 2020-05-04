@@ -96,7 +96,7 @@ window.onload = function() {
 
   const outergate = new Path.Oval(covetedLocation, [4 * heavenSize, 4 * heavenSize]);
   outergate.fillColor = null;
-  outergate.strokeColor = '#f2e9dc';
+  outergate.strokeColor = '#f5fafa';
   outergate.strokeWidth = 1;
   const outergateSym = new Symbol(outergate);
   /*
@@ -446,6 +446,7 @@ window.onload = function() {
   // make coveted goal
   const ideal = new CovetedLocation();
   ideal.update(covetedLocation);
+
   /*
   register effects
    */

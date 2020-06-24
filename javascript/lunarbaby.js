@@ -21,9 +21,6 @@ window.onload = function() {
   let covetedLocation = new Point(view.center.x, view.center.y);
   // max world's inertia
   const inertia = 1.5;
-  // world's sounds
-  var sound = document.getElementById("sound");
-  sound.volume = 0.2; // half volume
   // heaven
   var heavenSize = 20;
   /*
@@ -464,9 +461,6 @@ window.onload = function() {
      */
     covetedLocation = event.point;
     ideal.update(covetedLocation);
-    // play sound when user clicks
-    if (sound.paused) sound.play();
-    else if (sound.ended) sound.play();
     return false; // prevent touch scrolling
   }
 }

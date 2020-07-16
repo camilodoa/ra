@@ -9,7 +9,7 @@ of its environment it has access to is its distance to the concentric circles.
 In the current iteration of this agent, here are the q-learning parameters:
 
 ```javascript
-this.epsilon = 0.1;
+this.epsilon = 0.2;
 this.discount = 0.8;
 this.alpha = 0.3;
 ```

@@ -159,7 +159,7 @@ window.onload = function() {
         this.goLeft
       ];
       // q-learning
-      this.epsilon = 0.1;
+      this.epsilon = 0.2;
       this.discount = 0.8;
       this.alpha = 0.3;
       this.weights = {};

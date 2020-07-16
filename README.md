@@ -1,4 +1,4 @@
-# Reinforcement Agent [(Ra)](https://lunarbaby.ml)
+# Reinforcement agent [(Ra)](https://lunarbaby.ml)
 
 ![image](image.png)
 

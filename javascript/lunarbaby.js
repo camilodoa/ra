@@ -1,7 +1,7 @@
 /*
 camilo ortiz, 2020, camilodoa.ml
 
-lunar baby in the browser
+reinforcement learning in the browser
 
 dependencies:
 paper.js
@@ -17,11 +17,11 @@ window.onload = function() {
   const n = 1;
   // color
   const bodyColor = '#fdd8b5';
-  // secret
-  let covetedLocation = new Point(view.center.x, view.center.y);
+  // goal
+  let goal = new Point(view.center.x, view.center.y);
   // max world's inertia
   const inertia = 1.5;
-  // heaven
+  // goal's size
   var heavenSize = 20;
   /*
   symbols
@@ -80,18 +80,18 @@ window.onload = function() {
   shine.strokeColor = null;
   const shineSym = new Symbol(shine);
   // heaven
-  const heaven = new Path.Oval(covetedLocation, [heavenSize, heavenSize]);
+  const heaven = new Path.Oval(goal, [heavenSize, heavenSize]);
   heaven.fillColor = '#ffeac3';
   heaven.strokeColor = null;
   const heavenSym = new Symbol(heaven);
 
-  const innergate = new Path.Oval(covetedLocation, [2 * heavenSize, 2 * heavenSize]);
+  const innergate = new Path.Oval(goal, [2 * heavenSize, 2 * heavenSize]);
   innergate.fillColor = null;
   innergate.strokeColor = '#f9ead0';
   innergate.strokeWidth = 2;
   const innergateSym = new Symbol(innergate);
 
-  const outergate = new Path.Oval(covetedLocation, [4 * heavenSize, 4 * heavenSize]);
+  const outergate = new Path.Oval(goal, [4 * heavenSize, 4 * heavenSize]);
   outergate.fillColor = null;
   outergate.strokeColor = '#f5fafa';
   outergate.strokeWidth = 1;
@@ -117,9 +117,9 @@ window.onload = function() {
       this.outergate.matrix = new Matrix().translate(position)
     }
   });
-  const LunarBaby = Base.extend({
+  const Ra = Base.extend({
     /*
-    Lunar Baby.
+    Ra
      */
     initialize: function (position) {
       /*
@@ -149,6 +149,7 @@ window.onload = function() {
       this.blinking = false;
       this.blinkCounter = 0;
       this.movementCounter = 0;
+      this.blinkLength = 50;
       // frame rate
       this.count = 0;
       // actions available
@@ -173,7 +174,7 @@ window.onload = function() {
        */
       const features = {};
       // euclidean distance feature
-      features['euclidean'] = this.calculateSuccessor(position, velocity, action).subtract(covetedLocation).length / (view.size.height * view.size.width);
+      features['euclidean'] = this.calculateSuccessor(position, velocity, action).subtract(goal).length / (view.size.height * view.size.width);
       return features;
     },
     getQValue: function (position, velocity, action) {
@@ -234,7 +235,7 @@ window.onload = function() {
       /*
       how far you are to your goal is your pain
        */
-      return -covetedLocation.clone().subtract(this.calculateSuccessor(position, velocity, action)).length;
+      return -goal.clone().subtract(this.calculateSuccessor(position, velocity, action)).length;
     },
     /*
     behavioral animations
@@ -243,7 +244,7 @@ window.onload = function() {
       /*
       blink sometimes
        */
-      if (this.blinking && this.blinkCounter > this.actionCount) {
+      if (this.blinking && this.blinkCounter > this.blinkLength) {
         // If the lunar baby is blinking, stop it from blinking
         this.eyelid.symbol.item.fillColor = null;
         this.blinking = false;
@@ -372,9 +373,9 @@ window.onload = function() {
       if (x < 0 || x > view.size.width) this.vel.x *= -1;
       if (y < 0 || y > view.size.height) this.vel.y *= -1;
       // expelled from the gates
-      if (Math.pow(x - covetedLocation.x, 2) + Math.pow(y - covetedLocation.y, 2) < Math.pow(2.2 * heavenSize, 2)){
-        this.vel.x *= -2 * Math.random();
-        this.vel.y *= -2 * Math.random();
+      if (Math.pow(x - goal.x, 2) + Math.pow(y - goal.y, 2) < Math.pow(2.2 * heavenSize, 2)){
+        this.vel.x *= -2 * (Math.random() + 0.1);
+        this.vel.y *= -2 * (Math.random() + 0.1);
       }
       // this is a bug
       delete this.vel._angle;
@@ -438,11 +439,11 @@ window.onload = function() {
   // create babies
   const lunarBabies = [];
   for (let i = 0; i < n; i++) {
-    lunarBabies.push(new LunarBaby(Point.random().multiply(view.size)));
+    lunarBabies.push(new Ra(Point.random().multiply(view.size)));
   }
   // make coveted goal
   const ideal = new CovetedLocation();
-  ideal.update(covetedLocation);
+  ideal.update(goal);
 
   /*
   register effects
@@ -459,8 +460,8 @@ window.onload = function() {
     /*
     viewer interacting with the world
      */
-    covetedLocation = event.point;
-    ideal.update(covetedLocation);
+    goal = event.point;
+    ideal.update(goal);
     return false; // prevent touch scrolling
   }
 }

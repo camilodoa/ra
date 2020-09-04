@@ -3,7 +3,7 @@ html, body {
     height: 100%;
 }
 body {
-    background-image: radial-gradient(#ffeac3, #ece9e9);
+    background-image: radial-gradient(#ece9e9, #ffeac3);
 }
 canvas {
     display: block;

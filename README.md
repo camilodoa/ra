@@ -1,4 +1,4 @@
-# Reinforcement agent [(Ra)](https://camilodoa.ml/ra)
+Reinforcement agent [(Ra)](https://camilodoa.ml/ra)
 
 ![image](image.png)
 

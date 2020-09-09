@@ -6,7 +6,6 @@ html, body {
 canvas {
     position: absolute;
     left: 0;
-    right: 0;
     top: 0;
     width: calc(100vw - 100px);
     height: calc(100vh - 100px);

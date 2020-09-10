@@ -1,6 +1,6 @@
 # Reinforcement agent [(Ra)](https://camilodoa.ml/ra)
 
-![image](image.png)
+![image](img/image.png)
 
 Ra is a q-learning agent that exists in your browser. The reward at every time
 step is negatively correlated with Ra's distance to the cursor. The only feature

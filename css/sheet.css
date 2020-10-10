@@ -3,6 +3,7 @@ html, body {
     height: 100%;
     margin: 0px;
 }
+
 canvas {
     position: absolute;
     left: 0;
@@ -11,4 +12,34 @@ canvas {
     height: calc(100vh - 100px);
     margin: 50px 50px 50px 50px;
     background-color: #fff3dd;
+}
+
+a {
+  text-decoration: none;
+  color:  #0059a7;
+  font-family: 'Roboto', sans-serif;
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100vw;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+.author {
+  float: right;
+  position: absolute;
+  right: 50px;
+}
+
+.source{
+  float:right;
+  position: absolute;
+  left: 50px;
 }

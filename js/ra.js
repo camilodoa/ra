@@ -128,6 +128,9 @@ window.onload = function() {
       // initial position and velocity
       this.vel = Point.random();
       this.loc = position;
+      while(Math.abs(view.center.x - this.loc.x) <= 20 && Math.abs(view.center.y - this.loc.y) <= 20) {
+        this.loc = Point.random().multiply(view.size);
+      }
       this.ability = 150;
       // action time length
       this.actionCount = this.ability + gaussianSample() * 2;

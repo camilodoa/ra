@@ -128,7 +128,8 @@ window.onload = function() {
       // initial position and velocity
       this.vel = Point.random();
       this.loc = position;
-      while(Math.abs(view.center.x - this.loc.x) <= 20 && Math.abs(view.center.y - this.loc.y) <= 20) {
+      while(Math.abs(view.center.x - this.loc.x) <= heavenSize * 4 &&
+        Math.abs(view.center.y - this.loc.y) <= heavenSize * 4) {
         this.loc = Point.random().multiply(view.size);
       }
       this.ability = 150;

@@ -1,6 +1,5 @@
 html, body {
     overflow: hidden;
-    height: 100%;
     margin: 0px;
 }
 
@@ -20,16 +19,15 @@ a {
   font-family: 'Roboto', sans-serif;
 }
 
-.footer {
+.footer, #footer{
   display: flex;
-  flex-direction: row;
   position: fixed;
   bottom: 0;
   right: 0;
   width: 100vw;
   height: 50px;
-  justify-content: center;
   align-items: center;
+  z-index: 1;
 }
 
 .author {

@@ -3,7 +3,7 @@ html, body {
     margin: 0px;
 }
 
-canvas {
+.space {
     position: absolute;
     left: 0;
     top: 0;

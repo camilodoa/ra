@@ -18,26 +18,3 @@ a {
   color:  #0059a7;
   font-family: 'Roboto', sans-serif;
 }
-
-.footer, #footer{
-  display: flex;
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 100vw;
-  height: 50px;
-  align-items: center;
-  z-index: 1;
-}
-
-.author {
-  float: right;
-  position: absolute;
-  right: 50px;
-}
-
-.source{
-  float:right;
-  position: absolute;
-  left: 50px;
-}

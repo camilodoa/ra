@@ -378,8 +378,7 @@ window.onload = function() {
       if (y < 0 || y > view.size.height) this.vel.y *= -1;
       // expelled from the gates
       if (Math.pow(x - goal.x, 2) + Math.pow(y - goal.y, 2) < Math.pow(2.2 * heavenSize, 2)){
-        this.vel.x *= -2 * (Math.random() + 0.1);
-        this.vel.y *= -2 * (Math.random() + 0.1);
+        this.loc = Point.random().multiply(view.size);
       }
       // this is a bug
       delete this.vel._angle;

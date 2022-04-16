@@ -1,8 +1,5 @@
-body {
-  padding-bottom: 100px;
-}
-
 .space {
+    display: block;
     position: absolute;
     left: 0;
     top: 0;

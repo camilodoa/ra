@@ -1,13 +1,9 @@
-html, body {
-    overflow: hidden;
-}
-
 .space {
     position: absolute;
     left: 0;
     top: 0;
-    width: calc(100vw);
-    height: calc(100vh);
+    width: 100vw;
+    height: 100vh;
     background-color: #fff3dd;
 }
 

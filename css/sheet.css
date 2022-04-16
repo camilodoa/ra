@@ -1,3 +1,7 @@
+html, body {
+    overflow: hidden;
+}
+
 .space {
     position: absolute;
     left: 0;

@@ -459,12 +459,12 @@ window.onload = function() {
       lunarBabies[i].step();
     }
   }
-  view.onClick = function(event){
-    /*
-    viewer interacting with the world
-     */
-    goal = event.point;
-    ideal.update(goal);
-    return false; // prevent touch scrolling
-  }
+//   view.onClick = function(event){
+//     /*
+//     viewer interacting with the world
+//      */
+//     goal = event.point;
+//     ideal.update(goal);
+//     return false; // prevent touch scrolling
+//   }
 }
